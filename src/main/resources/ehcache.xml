@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+	updateCheck="false">
+	
+	<!-- diskStore： ehcache其实支持内存+磁盘+堆外内存，几个层级的缓存 -->
+	<diskStore path="java.io.tmpdir/Tmp_EhCache" />
+	
+	<!-- eternal：如果设置为true，那么timeout没有效果，缓存会一直存在，一般默认false -->
+	<!-- maxElementsInMemory：内存中可以缓存多少缓存条目，在实际中需要需要计算缓存的对象是多少 -->
+	<!-- overflowToDisk：如果内存不够，是不是溢出到磁盘 -->
+	<!-- diskPersistent：在jvm崩溃和重启之间 是否启用磁盘持久化机制 -->
+	<!-- timeToIdleSeconds：对象最大闲置的时间，如果超出闲置的时间会过期 ，默认0不过期-->
+	<!-- timeToLiveSeconds：对象最多存活时间，默认0不过期 -->
+	<!-- memoryStoreEvictionPolicy：当缓存数量达到最大数量时，使用一定算法清除旧数据，默认LRU -->
+	<defaultCache 
+		eternal="false" 
+		maxElementsInMemory="1000"
+		overflowToDisk="false" 
+		diskPersistent="false" 
+		timeToIdleSeconds="0"
+		timeToLiveSeconds="0" 
+		memoryStoreEvictionPolicy="LRU" />
+
+	<!-- 手动指定缓存策略，对不同的数据可以配置多种缓存策略 -->
+	<cache 
+		name="local" 
+		eternal="false" 
+		maxElementsInMemory="1000"
+		overflowToDisk="false" 
+		diskPersistent="false" 
+		timeToIdleSeconds="0"
+		timeToLiveSeconds="0" 
+		memoryStoreEvictionPolicy="LRU" />
+
+</ehcache>

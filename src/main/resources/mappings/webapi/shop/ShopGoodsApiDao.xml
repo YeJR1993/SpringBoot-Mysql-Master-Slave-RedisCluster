@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shanghai.webapi.shop.dao.ShopGoodsApiDao">
+	
+	<sql id="shopGoodsColumns">
+		a.id AS id,
+		a.shop_id AS shopId,
+		a.goods_name AS goodsName,
+		a.picture AS picture,
+		a.sale_price AS salePrice,
+		a.stock AS stock,
+		a.create_time AS createTime,
+		a.description AS description,
+		i.shop_name AS shopName
+	</sql>
+	
+	<sql id="shopInfoJoins">
+		LEFT JOIN shop_info i ON (a.shop_id = i.id)
+    </sql>
+	
+	<!-- 通过商品ID获取商品详情 -->
+	<select id="get" resultType="com.shanghai.webapi.shop.entity.ShopGoodsApi">
+		SELECT <include refid="shopGoodsColumns" /> FROM shop_goods a <include refid="shopInfoJoins" /> WHERE a.id = #{id}
+	</select>
+	
+	<!-- 更新商品库存 -->
+	<update id="updateGoodsStock">
+		UPDATE shop_goods SET stock = #{stock} WHERE id = #{id}
+	</update>
+</mapper>

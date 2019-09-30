@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shanghai.modules.shop.dao.ShopOrderDao">
+	
+	<sql id="shopOrder">
+		a.id AS id,
+		a.order_number AS orderNumber,
+		a.shop_id AS shopId,
+		a.receiving_name AS receivingName,
+		a.receiving_phone AS receivingPhone,
+		a.receiving_address AS receivingAddress,
+		a.actual_price AS actualPrice,
+		a.express_number AS expressNumber,
+		a.create_time AS createTime,
+		a.pay_time AS payTime,
+		a.delivery_time AS deliveryTime,
+		a.state AS state,
+		i.shop_name AS shopName
+	</sql>
+	
+	<sql id="shopOrderGoods">
+		b.id AS id,
+		b.order_id AS orderId,
+		b.goods_name AS goodsName,
+		b.picture AS picture,
+		b.sale_price AS salePrice,
+		b.buy_num AS buyNum
+	</sql>
+	
+	<sql id="shopInfoJoins">
+		LEFT JOIN shop_info i ON (a.shop_id = i.id)
+    </sql>
+	
+	<resultMap id="resultMap" type="com.shanghai.modules.shop.entity.ShopOrder">
+		<id column="id" property="id"/>
+		<result column="orderNumber" property="orderNumber" />
+		<result column="shopId" property="shopId" />
+		<result column="shopName" property="shopName" />
+		<result column="receivingName" property="receivingName" />
+		<result column="receivingPhone" property="receivingPhone" />
+		<result column="receivingAddress" property="receivingAddress" />
+		<result column="actualPrice" property="actualPrice" />
+		<result column="expressNumber" property="expressNumber" />
+		<result column="createTime" property="createTime" />
+		<result column="payTime" property="payTime" />
+		<result column="deliveryTime" property="deliveryTime" />
+		<result column="state" property="state" />
+		
+		<collection property="orderGoodsList" ofType="com.shanghai.modules.shop.entity.ShopOrderGoods" select="getOrderGoods" column="id">
+			<id column="id" property="id"/>
+			<result column="orderId" property="orderId" />
+			<result column="goodsName" property="goodsName" />
+			<result column="picture" property="picture" />
+			<result column="salePrice" property="salePrice" />
+			<result column="buyNum" property="buyNum" />
+		</collection>
+	</resultMap>
+	
+	<select id="getOrderGoods" parameterType="java.lang.Integer" resultType="com.shanghai.modules.shop.entity.ShopOrderGoods">  
+        select <include refid="shopOrderGoods"/> from shop_order_goods b where b.order_id = #{id}  
+    </select>  
+	
+	<!-- 通过id或者订单编号查询 -->
+	<select id="get" resultMap="resultMap">
+		SELECT <include refid="shopOrder" /> FROM shop_order a <include refid="shopInfoJoins" />
+		<where>
+	    	<if test="id != null">
+	        	AND a.id = #{id}
+	     	</if>
+	    	<if test="orderNumber != null">
+	       		AND a.order_number = #{orderNumber}
+	       	</if>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="com.shanghai.modules.shop.entity.ShopOrder">
+		SELECT <include refid="shopOrder" /> FROM shop_order a <include refid="shopInfoJoins" />
+		<where>
+            <if test="searchKey != null and searchKey != ''">
+               AND a.order_number LIKE CONCAT('%',#{searchKey},'%') OR i.shop_name LIKE CONCAT('%',#{searchKey},'%')
+            </if>
+        </where>
+	</select>
+	
+</mapper>

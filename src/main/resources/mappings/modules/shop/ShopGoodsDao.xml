@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shanghai.modules.shop.dao.ShopGoodsDao">
+	
+	<sql id="shopGoodsColumns">
+		a.id AS id,
+		a.shop_id AS shopId,
+		a.goods_name AS goodsName,
+		a.picture AS picture,
+		a.sale_price AS salePrice,
+		a.stock AS stock,
+		a.create_time AS createTime,
+		a.description AS description,
+		i.shop_name AS shopName
+	</sql>
+	
+	<sql id="shopInfoJoins">
+		LEFT JOIN shop_info i ON (a.shop_id = i.id)
+    </sql>
+	
+	<!-- 通过商品ID获取商品详情 -->
+	<select id="get" resultType="com.shanghai.modules.shop.entity.ShopGoods">
+		SELECT <include refid="shopGoodsColumns" /> FROM shop_goods a <include refid="shopInfoJoins" /> WHERE a.id = #{id}
+	</select>
+	
+	<!-- 按条件查询所有，一般用作分页 -->
+	<select id="findList" resultType="com.shanghai.modules.shop.entity.ShopGoods">
+		SELECT <include refid="shopGoodsColumns" /> FROM shop_goods a <include refid="shopInfoJoins" />
+		<where>
+            <if test="searchKey != null and searchKey != ''">
+               AND a.goods_name LIKE CONCAT('%',#{searchKey},'%') OR i.shop_name LIKE CONCAT('%',#{searchKey},'%')
+            </if>
+        </where>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.shanghai.modules.shop.entity.ShopGoods" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO shop_goods (
+			shop_id,
+			goods_name,
+			picture,
+			sale_price,
+			stock,
+			create_time,
+			description
+		) VALUES (
+			#{shopId},
+			#{goodsName},
+			#{picture},
+			#{salePrice},
+			#{stock},
+			now(),
+			#{description}
+		)
+	</insert>
+	
+	<!-- 更新 -->
+	<update id="update" parameterType="com.shanghai.modules.shop.entity.ShopGoods">
+		UPDATE shop_goods SET
+			shop_id = #{shopId},
+			goods_name = #{goodsName},
+			picture = #{picture},
+			sale_price = #{salePrice},
+			stock = #{stock},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		DELETE FROM shop_goods WHERE id = #{id}
+	</delete>
+	
+</mapper>

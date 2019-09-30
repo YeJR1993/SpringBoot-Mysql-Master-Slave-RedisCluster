@@ -1,0 +1,131 @@
+server:
+    port: 8081 # 配置端口
+    tomcat: # Tomcat 优化
+        min-spare-threads: 20 #初始化线程是20
+        max-threads: 100 # 最大线程数是100
+    connection-timeout: 5000 # 超时时间是5000ms
+    
+
+
+
+spring:
+    servlet:
+        multipart: # 文件上传配置
+            enabled: true # 是否支持文件上传
+            file-size-threshold: 0 # 是否支持文件写入磁盘
+            location: d:/opt/tmp # 上传文件的临时目录
+            max-file-size: 100Mb # 最大支持上传文件大小
+            max-request-size: 1024Mb # 最大支持请求大小
+    redis: # redis配置
+        cluster:
+          nodes: # redis cluster master nodes
+          - 192.168.0.132:7001
+          - 192.168.0.134:7003
+          - 192.168.0.136:7005
+          max-redirects: 3
+        password: 123456 # Redis服务器连接密码
+        timeout: 60000 # 连接超时时间（毫秒）
+        jedis:
+            pool:
+                max-active: 8 # 连接池最大连接数（使用负值表示没有限制）
+                max-wait: -1 # 连接池最大阻塞等待时间（使用负值表示没有限制）
+                max-idle: 8 # 连接池中的最大空闲连接
+                min-idle: 0 # 连接池中的最小空闲连接
+    freemarker: # 配置freemarker 数字格式不用逗号隔开配置
+        settings:
+            locale: zh_CN
+            number_format: 0.##
+    datasource:
+        filters: stat,wall,log4j # stat：sql的过滤器，用于sql监控
+    kafka:
+        bootstrap-servers: # kafka地址 brokers集群地址用
+        - 192.168.0.132:9092
+        - 192.168.0.134:9092
+        - 192.168.0.136:9092
+        producer: # 生产者的配置
+            retries: 1 # 发送失败重试次数
+            batch-size: 16 # 每批次发送消息的数量
+            buffer-memory: 33554432 # 即32MB的批处理缓冲区
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer # key序列化方式
+            value-serializer: org.apache.kafka.common.serialization.StringSerializer # value序列化方式
+        consumer: # 消费者的配置
+            group-id: test-consumer-group # 在kafka/config文件的consumer.properties中有配置
+            auto-offset-reset: latest # Kafka中没有初始偏移或如果当前偏移在服务器上不再存在时,默认区最新
+            enable-auto-commit: true # 是否开启自动提交
+            auto-commit-interval: 20000 # 自动提交的时间间隔
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer # key的解码方式
+            value-deserializer: org.apache.kafka.common.serialization.StringDeserializer # value的解码方式 
+
+
+mybatis: # 整合mybatis 
+    mapper-locations: classpath:mappings/*/*/*.xml # xml所在的位置 
+    type-aliases-package: com.shanghai.* # entity扫描的包名
+    config-location: classpath:/mybatis-config.xml # mybatis-config配置文件
+  
+
+
+
+pagehelper: # 分页插件配置
+    helper-dialect: mysql
+    reasonable: true
+    support-methods-arguments: true
+    params: count=countSql
+
+
+
+
+druid:
+    type: com.alibaba.druid.pool.DruidDataSource #Druid 数据源
+    readSize: 2 #读库的数量
+    write: # 主库
+        url: jdbc:mysql://127.0.0.1:3306/myspringboot?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: root
+        password: root
+        driver-class-name: com.mysql.jdbc.Driver
+        initial-size: 5
+        min-idle: 1
+        max-active: 100
+        filters: stat,wall,log4j # stat：sql的过滤器，用于sql监控
+    read1: # 从库1
+        url: jdbc:mysql://127.0.0.1:3306/myspringboot?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: root
+        password: root
+        driver-class-name: com.mysql.jdbc.Driver
+        initial-size: 5
+        min-idle: 1
+        max-active: 100
+        filters: stat,wall,log4j # stat：sql的过滤器，用于sql监控
+    read2: # 从库2
+        url: jdbc:mysql://127.0.0.1:3306/myspringboot?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: root
+        password: root
+        driver-class-name: com.mysql.jdbc.Driver
+        initial-size: 5
+        min-idle: 1
+        max-active: 100
+        filters: stat,wall,log4j # stat：sql的过滤器，用于sql监控
+        
+        
+        
+
+shiro: # shiro 权限的缓存时间
+    session:
+        expireTime: 1800000 # shiro登录的session过期时间半小时.毫秒
+    cache:
+        expireTime: 600000 # shiro的cache有效期10分钟.毫秒
+
+
+
+
+upload:
+    filePath: d:/opt/upload/ # 上传文件保存目录
+    
+    
+    
+
+filterChain: /api #shiro 通过
+
+
+
+
+zooKeeper: 192.168.0.132:2181,192.168.0.134:2181,192.168.0.136:2181   

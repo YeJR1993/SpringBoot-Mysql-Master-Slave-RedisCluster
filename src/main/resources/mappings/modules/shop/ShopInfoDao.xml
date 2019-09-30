@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shanghai.modules.shop.dao.ShopInfoDao">
+	
+	<sql id="shopInfoColumns">
+		a.id AS id,
+		a.user_id AS userId,
+		a.shop_name AS shopName,
+		a.shop_log AS shopLog,
+		a.longitude AS longitude,
+		a.latitude AS latitude,
+		a.address AS address,
+		a.mobile AS mobile,
+		a.create_time AS createTime,
+		a.description AS description,
+		a.state AS state,
+		u.username AS userName
+	</sql>
+	
+	<sql id="userJoins">
+		LEFT JOIN sys_user u ON (a.user_id = u.id)
+    </sql>
+	
+	<!-- 通过商店的id，获取商店详情 -->
+	<select id="getById" resultType="com.shanghai.modules.shop.entity.ShopInfo">
+		SELECT <include refid="shopInfoColumns" /> FROM shop_info a <include refid="userJoins" /> WHERE a.id = #{id}
+	</select>
+	
+	<!-- 通过userid，获取商店详情 -->
+	<select id="getByUserId" resultType="com.shanghai.modules.shop.entity.ShopInfo">
+		SELECT <include refid="shopInfoColumns" /> FROM shop_info a <include refid="userJoins" /> WHERE a.user_id = #{userId}
+	</select>
+	
+	<!-- 按条件查询所有，一般用作分页 -->
+	<select id="findList" resultType="com.shanghai.modules.shop.entity.ShopInfo">
+		SELECT <include refid="shopInfoColumns" /> FROM shop_info a <include refid="userJoins" />
+		<where>
+            <if test="searchKey != null and searchKey != ''">
+               AND a.shop_name LIKE CONCAT('%',#{searchKey},'%') OR u.username LIKE CONCAT('%',#{searchKey},'%')
+            </if>
+        </where>
+	</select>
+	
+	<!-- 插入商店信息 -->
+	<insert id="insert" parameterType="com.shanghai.modules.shop.entity.ShopInfo" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO shop_info (
+			user_id,
+			shop_name,
+			shop_log,
+			longitude,
+			latitude,
+			address,
+			mobile,
+			create_time,
+			description
+		) VALUES (
+			#{userId},
+			#{shopName},
+			#{shopLog},
+			#{longitude},
+			#{latitude},
+			#{address},
+			#{mobile},
+			now(),
+			#{description}
+		)
+	</insert>
+	
+	<!-- 更新商店信息 -->
+	<update id="update" parameterType="com.shanghai.modules.shop.entity.ShopInfo">
+		UPDATE shop_info
+		<trim prefix="set" suffixOverrides=",">
+			user_id = #{userId},
+			shop_name = #{shopName},
+			shop_log = #{shopLog},
+			longitude = #{longitude},
+			latitude = #{latitude},
+			address = #{address},
+			mobile = #{mobile},
+			description = #{description},
+			<if test="state != null and state != ''">state = #{state}</if>
+		</trim>
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 通过ID逻辑删除 -->
+	<update id="deleteByLogic">
+		UPDATE shop_info SET state = 1 WHERE id = #{id}
+	</update>
+	
+</mapper>
