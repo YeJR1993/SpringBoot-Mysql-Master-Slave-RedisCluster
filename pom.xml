@@ -170,7 +170,7 @@
 		<dependency>
 		    <groupId>org.apache.zookeeper</groupId>
 		    <artifactId>zookeeper</artifactId>
-		    <version>3.4.13</version>
+		    <version>3.7.2</version>
 			<!-- 与spring-boot-starter-web中的log4j jar包冲突 所以这里去除-->
 		    <exclusions>
 		    	<exclusion>
